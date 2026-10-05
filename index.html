@@ -47,6 +47,13 @@ h1{font-family:var(--head);font-weight:700;font-size:clamp(26px,5.5vw,44px);lett
 .pl{margin:2px 0 14px;color:var(--mute);font-size:15px}
 .plinth{margin:auto -8px 0;background:linear-gradient(180deg,var(--purple),var(--purple2));border-top:2px solid var(--gold);font-family:var(--head);font-weight:700;font-size:22px;color:var(--gold);padding:8px 0}
 .p1 .plinth{padding:26px 0}.p2 .plinth{padding:16px 0}
+.pv small{display:block;font-family:var(--body);font-size:14px;color:var(--mute);letter-spacing:0}
+.mini{gap:8px;margin:4px 0 14px}
+.mini .pc{padding:12px 4px 0}.mini .pc.p1{padding-top:14px}
+.mini .crown{font-size:16px}.mini .p1 .crown{font-size:24px}
+.mini .pn{font-size:13px;margin-top:4px}.mini .pv{font-size:14px}.mini .pv small{font-size:12px}
+.mini .pl{font-size:12px;margin-bottom:10px}
+.mini .plinth{font-size:16px;margin:auto -4px 0;padding:5px 0}.mini .p1 .plinth{padding:16px 0}.mini .p2 .plinth{padding:10px 0}
 .fin{max-width:880px;margin:0 auto}
 .mot{font-family:var(--head);font-size:clamp(9px,2vw,12px);letter-spacing:.28em;color:var(--mute);margin-top:6px}
 .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 16px}
@@ -120,11 +127,11 @@ var WAR,M;
 
 var C=[
 {k:"pay",t:"Overall",d:"Greatest total contribution",i:7,f:function(v){return"$"+v.toLocaleString("en-US")}},
-{k:"war",t:"Warmonger",d:"Most direct blows against the enemy",i:2,f:String},
-{k:"non",t:"Vigilante",d:"Most battles beyond the faction",i:3,f:String},
-{k:"res",t:"Respected",d:"Most respect earned",i:4,f:function(v){return v.toLocaleString("en-US",{minimumFractionDigits:1,maximumFractionDigits:1})}},
-{k:"ast",t:"Wingman",d:"Most backup for teammates",i:5,f:String},
-{k:"hos",t:"Hospitalizer",d:"Most enemies sent to the infirmary",i:6,f:String}
+{k:"war",t:"Warmonger",d:"Most direct blows against the enemy",i:2,u:"war hits",f:String},
+{k:"non",t:"Vigilante",d:"Most battles beyond the faction",i:3,u:"non-war hits",f:String},
+{k:"res",t:"Respected",d:"Most respect earned",i:4,u:"respect",f:function(v){return v.toLocaleString("en-US",{minimumFractionDigits:1,maximumFractionDigits:1})}},
+{k:"ast",t:"Wingman",d:"Most backup for teammates",i:5,u:"assists",f:String},
+{k:"hos",t:"Hospitalizer",d:"Most enemies sent to the infirmary",i:6,u:"hospitalizations",f:String}
 ];
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function $(id){return document.getElementById(id)}
@@ -157,10 +164,11 @@ function wl(m){return m[8]?" · "+m[8]+(m[8]>1?" wars":" war"):""}
 function rank(c,n){return M.filter(function(m){return m[c.i]>0}).sort(function(a,b){return b[c.i]-a[c.i]}).slice(0,n)}
 function rows(c,r,off,top){return r.map(function(m,j){var n=j+off;return'<li class="'+(n<3?"p"+(n+1):"")+'"><span class="r">'+(n+1)+'</span><span class="n">'+esc(m[0])+'<i>Lvl '+m[1]+wl(m)+'</i></span><span class="v">'+c.f(m[c.i])+'</span><span class="b"><u style="width:'+(m[c.i]/top*100).toFixed(1)+'%"></u></span></li>'}).join("")}
 function card(c,n){var r=rank(c,n);return'<section class="cat"><h3>'+c.t+'</h3><div class="d">'+c.d+'</div><ol>'+rows(c,r,0,r[0][c.i])+'</ol></section>'}
+function podium(c,r,mini){return'<div class="pod'+(mini?" mini":"")+'">'+[1,0,2].filter(function(i){return r[i]}).map(function(i){var m=r[i];return'<div class="pc p'+(i+1)+'"><div class="crown">'+(i?"\u2726":"\u265B")+'</div><div class="pn">'+esc(m[0])+'</div><div class="pv">'+c.f(m[c.i])+(c.u?"<small>"+c.u+"</small>":"")+'</div><div class="pl">Lvl '+m[1]+wl(m)+'</div><div class="plinth">'+(i+1)+'</div></div>'}).join("")+'</div>'}
+function tcard(c){var r=rank(c,10);return'<section class="cat"><h3>'+c.t+'</h3><div class="d">'+c.d+'</div>'+podium(c,r,1)+'<ol>'+rows(c,r.slice(3),3,r[0][c.i])+'</ol></section>'}
 function hall(){
 var P=C[0],r=rank(P,10);
-var pod=[1,0,2].filter(function(i){return r[i]}).map(function(i){var m=r[i];return'<div class="pc p'+(i+1)+'"><div class="crown">'+(i?"✦":"♛")+'</div><div class="pn">'+esc(m[0])+'</div><div class="pv">'+P.f(m[7])+'</div><div class="pl">Lvl '+m[1]+wl(m)+'</div><div class="plinth">'+(i+1)+'</div></div>'}).join("");
-return'<h2 class="sec">The Podium</h2><div class="pod">'+pod+'</div><h2 class="sec">The Legion\u2019s Finest</h2><section class="cat fin"><ol>'+rows(P,r.slice(3),3,r[0][7])+'</ol></section><h2 class="sec">Titles of Honor</h2><div class="grid">'+C.slice(1).map(function(c){return card(c,10)}).join("")+'</div>'}
+return'<h2 class="sec">The Podium</h2>'+podium(P,r)+'<h2 class="sec">The Legion\u2019s Finest</h2><section class="cat fin"><ol>'+rows(P,r.slice(3),3,r[0][7])+'</ol></section><h2 class="sec">Titles of Honor</h2><div class="grid">'+C.slice(1).map(tcard).join("")+'</div>'}
 var tabs=$("tabs"),out=$("out");
 function render(){
 var h;
