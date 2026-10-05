@@ -19,7 +19,11 @@ body{margin:0;background:var(--bg);background-image:radial-gradient(900px 500px 
 h1{font-family:var(--head);font-weight:700;font-size:clamp(26px,5.5vw,44px);letter-spacing:.14em;margin:0;color:var(--gold2);line-height:1.1;display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px}
 .tagimg{height:26px;width:auto}
 .tag{font-family:var(--head);font-size:clamp(10px,2.3vw,13px);letter-spacing:.3em;color:var(--gold);margin-top:8px}
-.war{margin-top:18px;background:var(--panel);border:1px solid var(--line);padding:18px 20px 16px}
+.wars{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.wars button{font:600 14px var(--head);letter-spacing:.06em;padding:7px 13px;border:1px solid var(--line);background:transparent;color:var(--mute);cursor:pointer}
+.wars button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold2);background:var(--panel2)}
+.wars button:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+.war{margin-top:10px;background:var(--panel);border:1px solid var(--line);padding:18px 20px 16px}
 .wh{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:14px}
 .wh h2{margin:0;font-family:var(--head);font-size:clamp(17px,3.2vw,24px);letter-spacing:.06em;color:var(--gold2)}
 .res{padding:2px 12px;background:var(--gold);color:#1a1020;font-family:var(--head);font-weight:700;font-size:12px;letter-spacing:.2em}
@@ -30,6 +34,21 @@ h1{font-family:var(--head);font-weight:700;font-size:clamp(26px,5.5vw,44px);lett
 .st b{display:block;font-family:var(--head);font-size:clamp(17px,2.8vw,23px);color:var(--gold2);font-weight:700;line-height:1.25;margin-top:2px}
 .cache{margin:12px 0 0;color:var(--mute);font-size:16px}
 .cache em{color:var(--gold);font-style:normal;font-family:var(--head);font-size:13px;letter-spacing:.14em;margin-right:8px}
+.sec{display:flex;align-items:center;gap:16px;margin:32px 0 16px;font-family:var(--head);font-size:clamp(14px,3vw,19px);letter-spacing:.3em;color:var(--gold2);text-transform:uppercase;white-space:nowrap}
+.sec:before,.sec:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.sec:after{transform:scaleX(-1)}
+.pod{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:12px;align-items:end;max-width:880px;margin:0 auto}
+.pc{display:flex;flex-direction:column;min-width:0;text-align:center;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);padding:16px 8px 0}
+.pc.p1{border-color:var(--gold);box-shadow:0 0 32px rgba(205,167,90,.2);padding-top:22px}
+.crown{font-size:24px;line-height:1;color:var(--gold)}
+.p1 .crown{font-size:40px;color:var(--gold2)}
+.pn{margin-top:8px;font-family:var(--head);font-weight:700;color:var(--gold2);font-size:clamp(12px,2.6vw,20px);overflow:hidden;text-overflow:ellipsis}
+.pv{margin-top:4px;font-family:var(--head);font-size:clamp(13px,2.4vw,19px)}
+.pl{margin:2px 0 14px;color:var(--mute);font-size:15px}
+.plinth{margin:auto -8px 0;background:linear-gradient(180deg,var(--purple),var(--purple2));border-top:2px solid var(--gold);font-family:var(--head);font-weight:700;font-size:22px;color:var(--gold);padding:8px 0}
+.p1 .plinth{padding:26px 0}.p2 .plinth{padding:16px 0}
+.fin{max-width:880px;margin:0 auto}
+.mot{font-family:var(--head);font-size:clamp(9px,2vw,12px);letter-spacing:.28em;color:var(--mute);margin-top:6px}
 .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 16px}
 .tabs button{font:600 15px var(--head);letter-spacing:.08em;padding:8px 14px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
 .tabs button:hover{border-color:var(--gold)}
@@ -58,9 +77,10 @@ li .b u{display:block;height:100%;background:linear-gradient(90deg,#7a3a94,var(-
 <div class="wrap">
 <header class="top">
 <img class="logo" id="logo" alt="Praetorian faction logo">
-<div class="ti"><h1>PRAETORIAN<img class="tagimg" id="tagimg" alt=""></h1><div class="tag">DISCIPLINE · LOYALTY · FAMILY · ALWAYS</div></div>
+<div class="ti"><h1>PRAETORIAN<img class="tagimg" id="tagimg" alt=""></h1><div class="tag">HALL OF FAME</div><div class="mot">DISCIPLINE · LOYALTY · FAMILY · ALWAYS</div></div>
 </header>
 
+<div class="wars" id="wars" role="group" aria-label="Choose war"></div>
 <section class="war" aria-label="Recent war summary">
 <div class="wh"><h2 id="wName"></h2><span class="res" id="wRes"></span><div class="m" id="wMeta"></div></div>
 <div class="st" id="wStats"></div>
@@ -78,56 +98,76 @@ var SITE={
   logo:"https://factionimages.torn.com/ab83dad2-461a-442e-a115-b4b5a53b8686-41160.png", /* swap in your new logo URL here */
   tag:"https://factiontags.torn.com/41160-46652.png"
 };
-var WAR={
-  name:"Praetorian vs EPIC Warmong3rs",
-  result:"Victory",
-  meta:"Payout shared Sep 18, 2026 · 51 members",
-  stats:[
-    ["Duration","72.5 hours"],
-    ["Our score","16,923"],
-    ["Our attacks","2,273"],
-    ["Total war attacks","3,932"],
-    ["Respect gained","6,408"],
-    ["Rank change","Gold I → Gold II"]
-  ],
-  caches:"3 Melee · 3 Armor · 1 Small Arms · 1 Medium Arms"
-};
-/* Member rows: [name, level, war hits, non-war hits, respect, assists, hospitalizations, payout] */
-var M=[["RickGrimes",95,127,7,1337.5,19,94,65830799],["BellyFeii",50,114,28,768.1,31,14,62268572],["mawsieveDck",67,122,12,943.8,6,57,60957534],["Baymax",96,93,34,842.4,48,71,56125158],["ViaYourMum",57,87,24,543.0,22,47,47445913],["nemukud",35,92,2,673.5,6,1,45235468],["0WL",76,84,0,681.3,27,19,44451955],["Eric1965",30,88,0,545.8,0,0,41886274],["Jay",93,79,0,443.7,27,15,41401968],["Rhyzen",27,79,13,506.9,6,0,40055266],["CendanN",69,68,53,412.7,7,0,39558884],["SeveTheGreat",35,78,7,339.6,4,1,38062521],["ZZ-Top",41,74,12,522.5,2,0,37124448],["AuntieSay",70,67,1,416.4,11,18,33619354],["River-Tamworth",32,67,0,511.7,3,1,32641358],["Iceman32",70,35,127,174.0,7,9,32394206],["Mr_Fabulo",42,63,15,311.8,1,4,31630888],["by4ciksozz",22,62,0,403.3,2,0,29864156],["DaPlanet",38,61,0,292.5,0,0,28756468],["NZLrosebud",48,54,26,271.6,0,2,28537971],["MaRtY1923",49,46,30,255.4,1,1,25452245],["DemiGodZilla",32,51,0,324.3,4,0,24885921],["Avenque",25,51,1,319.6,0,0,24402572],["Skyn04",55,26,84,99.9,0,0,21999057],["Valsi",45,33,54,165.3,0,0,21894028],["aleksaiandrej1",27,41,4,270.4,1,0,20181408],["LongHong",37,39,13,225.0,1,1,20174955],["Sekerek",25,42,0,225.9,1,0,20025101],["R3gulus",50,33,37,192.1,0,0,19992988],["katanauser",16,41,0,217.7,0,0,19396616],["Jackrattler",70,37,1,393.3,2,3,18552298],["Droopyboner",69,29,0,257.4,3,18,14493683],["littlestjeff3",32,19,43,89.8,1,1,14127068],["HighlordZephrom",59,29,0,195.6,1,10,14000695],["AM31032",35,27,0,170.9,1,0,13008755],["mennas",73,23,3,89.8,0,1,11126993],["Beetal",58,20,1,106.1,1,0,9724528],["Aphoxi",48,8,48,48.3,2,4,9709077],["BroImMav",35,14,27,50.2,0,0,9702248],["Cooplix",26,13,11,53.3,0,0,7385276],["Jayb_1780",44,8,26,33.2,0,0,6794865],["ToughJew",33,9,19,47.9,0,0,6479776],["DarthSmoke",57,12,4,68.4,0,2,6159791],["Koolade221822",34,11,4,93.1,1,0,5930457],["Larryg72",78,0,46,0.0,0,0,5378943],["Jocey",40,9,8,51.9,0,0,5206741],["Cylver",50,4,3,30.3,0,4,2272663],["Jynx-Obey1220",32,1,6,2.8,0,0,1166546],["ThitherThread",53,1,0,2.5,1,0,610386],["Maggie_14",42,1,0,7.3,0,0,479541],["LegateLanius",31,1,0,3.7,0,0,467702]];
+/* Each war: label (button text), summary fields, and members as
+   [name, level, war hits, non-war hits, respect, assists, hospitalizations, payout].
+   Add a new war at the TOP of the list; the first one is shown by default. */
+var WARS=[
+{label:"Oct 4 · vs Affliction",name:"Praetorian vs Affliction",result:"Victory",
+ meta:"Payout shared Oct 4, 2026 · 48 members",
+ stats:[["Duration","15.0 hours"],["Our score","14,286"],["Our attacks","1,516"],["Total war attacks","1,966"],["Respect gained","8,125"],["Rank change","Gold II → Gold II"]],
+ caches:"2 Medium Arms · 3 Small Arms · 5 Melee · 2 Armor",
+ members:[["R3gulus",50,77,0,687.3,7,0,80015726],["RHickGrimes",84,71,0,455.6,14,14,75372717],["0WL",78,58,0,515.8,24,26,73475865],["Jay",94,63,1,366.8,15,3,68176659],["HighlordZephrom",61,61,15,631.7,2,7,66629499],["nemukud",38,64,0,625.4,0,2,63530142],["NZLrosebud",51,58,0,631.3,2,3,60345301],["RiverGrimes",34,59,0,547.8,1,0,58670363],["ViaYourMum",57,55,0,512.7,6,8,58318955],["RickGrimes",96,48,0,434.8,16,19,58244412],["Iceman32",70,49,0,480.9,12,20,57171808],["MawsRickGrimes",68,49,0,430.6,3,20,49749537],["BellyGrimes",50,46,3,443.6,3,4,48442093],["katanauser",16,47,0,363.4,0,0,44639743],["Mr_Fabulo",43,49,0,285.8,0,0,44583285],["BarthTK",30,42,11,329.0,0,0,42849618],["RickRhymes",52,42,0,370.9,1,1,41567706],["Baymax",97,30,3,229.1,15,23,39824800],["Droopyboner",79,37,0,385.0,2,1,38636535],["Eric1965",32,39,0,353.6,0,0,38136365],["Rimuru_T",40,39,0,338.4,0,0,37816577],["Valsi",45,37,12,243.9,0,0,37385795],["CendanN",69,38,0,325.3,0,1,36752670],["Rhyzen",27,36,0,318.9,0,0,35043672],["SeveTheGreat",37,35,0,241.3,1,0,33332560],["AuntieSay",70,30,0,214.8,7,9,33082803],["Jackrattler",70,30,1,258.7,0,3,29316779],["DemiGodZilla",32,29,4,222.3,0,2,28547039],["by4ciksozz",25,27,0,245.5,1,1,27124581],["Cylver",50,23,0,187.5,1,0,22756262],["ZZ-Top",43,24,0,180.3,0,0,22683836],["Sekerek",25,19,0,146.9,0,0,18045930],["Mrs0wl",42,17,0,134.1,0,0,16202583],["AM31032",35,15,0,128.6,0,0,14511246],["Maggie_14",42,15,0,92.3,0,0,13748254],["CumBee",18,13,0,120.3,1,0,13469305],["Avenque",25,13,0,126.0,0,0,12882353],["Skyn04",57,9,0,56.2,0,0,8266361],["Aphoxi",49,5,4,49.2,0,0,6012900],["Jocey",45,0,23,0.0,0,0,5999731],["Pruszek47",38,5,1,37.8,1,3,5699329],["Darkustar",39,5,0,47.8,0,0,4941926],["Beetal",59,5,0,46.5,0,0,4912701],["RickGirmes",74,0,18,0.0,0,18,4695442],["Jynx-Obey1220",32,0,17,0.0,0,0,4434584],["DarthSmoke",57,3,0,22.7,0,0,2838922],["Eiryrai",22,0,5,0.0,0,0,1304289],["LongHong",39,0,4,0.0,0,0,1043431]]},
+{label:"Sep 18 · vs EPIC Warmong3rs",name:"Praetorian vs EPIC Warmong3rs",result:"Victory",
+ meta:"Payout shared Sep 18, 2026 · 51 members",
+ stats:[["Duration","72.5 hours"],["Our score","16,923"],["Our attacks","2,273"],["Total war attacks","3,932"],["Respect gained","6,408"],["Rank change","Gold I → Gold II"]],
+ caches:"3 Melee · 3 Armor · 1 Small Arms · 1 Medium Arms",
+ members:[["RickGrimes",95,127,7,1337.5,19,94,65830799],["BellyFeii",50,114,28,768.1,31,14,62268572],["mawsieveDck",67,122,12,943.8,6,57,60957534],["Baymax",96,93,34,842.4,48,71,56125158],["ViaYourMum",57,87,24,543.0,22,47,47445913],["nemukud",35,92,2,673.5,6,1,45235468],["0WL",76,84,0,681.3,27,19,44451955],["Eric1965",30,88,0,545.8,0,0,41886274],["Jay",93,79,0,443.7,27,15,41401968],["Rhyzen",27,79,13,506.9,6,0,40055266],["CendanN",69,68,53,412.7,7,0,39558884],["SeveTheGreat",35,78,7,339.6,4,1,38062521],["ZZ-Top",41,74,12,522.5,2,0,37124448],["AuntieSay",70,67,1,416.4,11,18,33619354],["River-Tamworth",32,67,0,511.7,3,1,32641358],["Iceman32",70,35,127,174.0,7,9,32394206],["Mr_Fabulo",42,63,15,311.8,1,4,31630888],["by4ciksozz",22,62,0,403.3,2,0,29864156],["DaPlanet",38,61,0,292.5,0,0,28756468],["NZLrosebud",48,54,26,271.6,0,2,28537971],["MaRtY1923",49,46,30,255.4,1,1,25452245],["DemiGodZilla",32,51,0,324.3,4,0,24885921],["Avenque",25,51,1,319.6,0,0,24402572],["Skyn04",55,26,84,99.9,0,0,21999057],["Valsi",45,33,54,165.3,0,0,21894028],["aleksaiandrej1",27,41,4,270.4,1,0,20181408],["LongHong",37,39,13,225.0,1,1,20174955],["Sekerek",25,42,0,225.9,1,0,20025101],["R3gulus",50,33,37,192.1,0,0,19992988],["katanauser",16,41,0,217.7,0,0,19396616],["Jackrattler",70,37,1,393.3,2,3,18552298],["Droopyboner",69,29,0,257.4,3,18,14493683],["littlestjeff3",32,19,43,89.8,1,1,14127068],["HighlordZephrom",59,29,0,195.6,1,10,14000695],["AM31032",35,27,0,170.9,1,0,13008755],["mennas",73,23,3,89.8,0,1,11126993],["Beetal",58,20,1,106.1,1,0,9724528],["Aphoxi",48,8,48,48.3,2,4,9709077],["BroImMav",35,14,27,50.2,0,0,9702248],["Cooplix",26,13,11,53.3,0,0,7385276],["Jayb_1780",44,8,26,33.2,0,0,6794865],["ToughJew",33,9,19,47.9,0,0,6479776],["DarthSmoke",57,12,4,68.4,0,2,6159791],["Koolade221822",34,11,4,93.1,1,0,5930457],["Larryg72",78,0,46,0.0,0,0,5378943],["Jocey",40,9,8,51.9,0,0,5206741],["Cylver",50,4,3,30.3,0,4,2272663],["Jynx-Obey1220",32,1,6,2.8,0,0,1166546],["ThitherThread",53,1,0,2.5,1,0,610386],["Maggie_14",42,1,0,7.3,0,0,479541],["LegateLanius",31,1,0,3.7,0,0,467702]]}
+];
+var WAR,M;
 /* ===== END OF EDITABLE DATA ===== */
 
 var C=[
-{k:"pay",t:"Total Payout",d:"Greatest overall contribution",i:7,f:function(v){return"$"+v.toLocaleString("en-US")}},
-{k:"war",t:"War Hits",d:"Direct blows against the enemy",i:2,f:String},
-{k:"non",t:"Non-War Hits",d:"Battles beyond the faction",i:3,f:String},
-{k:"res",t:"Respect",d:"Glory earned through strategy",i:4,f:function(v){return v.toLocaleString("en-US",{minimumFractionDigits:1})}},
-{k:"ast",t:"Assists",d:"Backup for those beside them",i:5,f:String},
-{k:"hos",t:"Hospitalizations",d:"Enemies sent to the infirmary",i:6,f:String}
+{k:"pay",t:"Overall",d:"Greatest total contribution",i:7,f:function(v){return"$"+v.toLocaleString("en-US")}},
+{k:"war",t:"Warmonger",d:"Most direct blows against the enemy",i:2,f:String},
+{k:"non",t:"Vigilante",d:"Most battles beyond the faction",i:3,f:String},
+{k:"res",t:"Respected",d:"Most respect earned",i:4,f:function(v){return v.toLocaleString("en-US",{minimumFractionDigits:1,maximumFractionDigits:1})}},
+{k:"ast",t:"Wingman",d:"Most backup for teammates",i:5,f:String},
+{k:"hos",t:"Hospitalizer",d:"Most enemies sent to the infirmary",i:6,f:String}
 ];
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-document.getElementById("wName").textContent=WAR.name;
-document.getElementById("wRes").textContent=WAR.result.toUpperCase();
-document.getElementById("wMeta").textContent=WAR.meta;
-document.getElementById("wStats").innerHTML=WAR.stats.map(function(s){return'<div><span>'+esc(s[0])+'</span><b>'+esc(s[1])+'</b></div>'}).join("");
-document.getElementById("wCache").innerHTML='<em>CACHES</em>'+esc(WAR.caches);
-[["logo",SITE.logo],["tagimg",SITE.tag]].forEach(function(p){var e=document.getElementById(p[0]);e.onerror=function(){e.style.display="none"};e.src=p[1]});
+function $(id){return document.getElementById(id)}
+[["logo",SITE.logo],["tagimg",SITE.tag]].forEach(function(p){var e=$(p[0]);e.onerror=function(){e.style.display="none"};e.src=p[1]});
 
-var view="all",tabs=document.getElementById("tabs"),out=document.getElementById("out");
-function card(c,n){
-var r=M.filter(function(m){return m[c.i]>0}).sort(function(a,b){return b[c.i]-a[c.i]}).slice(0,n),top=r[0][c.i];
-var h='<section class="cat"><h3>'+c.t+'</h3><div class="d">'+c.d+'</div><ol>';
-r.forEach(function(m,j){h+='<li class="'+(j<3?"p"+(j+1):"")+'"><span class="r">'+(j+1)+'</span><span class="n">'+esc(m[0])+'<i>Lvl '+m[1]+'</i></span><span class="v">'+c.f(m[c.i])+'</span><span class="b"><u style="width:'+(m[c.i]/top*100).toFixed(1)+'%"></u></span></li>'});
-return h+'</ol></section>'}
+/* Combine every war into all-time totals (members matched by name) */
+function agg(){var mp={},o=[];WARS.slice().reverse().forEach(function(w){w.members.forEach(function(m){var k=m[0].toLowerCase(),r=mp[k];if(!r){r=mp[k]=[m[0],m[1],0,0,0,0,0,0,0];o.push(r)}r[1]=m[1];for(var i=2;i<8;i++)r[i]+=m[i];r[8]++})});return o}
+function num(w,l){var x=w.stats.filter(function(s){return s[0]===l})[0];return x?parseFloat(x[1].replace(/,/g,"")):0}
+function sum(l){return WARS.reduce(function(a,w){return a+num(w,l)},0)}
+
+var wars=$("wars"),view="all";
+function setWar(i){
+var h;
+if(i<0){
+ M=agg();
+ $("wName").textContent="All-Time Hall of Fame";$("wRes").textContent="ALL WARS";
+ $("wMeta").textContent=WARS.length+" wars · "+M.length+" members honored";
+ h=[["Wars fought",WARS.length],["Victories",WARS.filter(function(w){return w.result==="Victory"}).length],["Total attacks",sum("Our attacks").toLocaleString("en-US")],["Respect gained",sum("Respect gained").toLocaleString("en-US")],["Members honored",M.length],["Paid to members","$"+M.reduce(function(a,m){return a+m[7]},0).toLocaleString("en-US")]];
+ $("wCache").style.display="none"}
+else{
+ WAR=WARS[i];M=WAR.members;
+ $("wName").textContent=WAR.name;$("wRes").textContent=WAR.result.toUpperCase();$("wMeta").textContent=WAR.meta;
+ h=WAR.stats;$("wCache").style.display="";$("wCache").innerHTML="<em>CACHES</em>"+esc(WAR.caches)}
+$("wStats").innerHTML=h.map(function(s){return"<div><span>"+esc(s[0])+"</span><b>"+esc(s[1])+"</b></div>"}).join("");
+Array.prototype.forEach.call(wars.children,function(b,j){b.setAttribute("aria-pressed",j===i+1)});
+render()}
+["★ All wars · Hall of Fame"].concat(WARS.map(function(w){return w.label})).forEach(function(t,j){var b=document.createElement("button");b.textContent=t;b.onclick=function(){setWar(j-1)};wars.appendChild(b)});
+
+function wl(m){return m[8]?" · "+m[8]+(m[8]>1?" wars":" war"):""}
+function rank(c,n){return M.filter(function(m){return m[c.i]>0}).sort(function(a,b){return b[c.i]-a[c.i]}).slice(0,n)}
+function rows(c,r,off,top){return r.map(function(m,j){var n=j+off;return'<li class="'+(n<3?"p"+(n+1):"")+'"><span class="r">'+(n+1)+'</span><span class="n">'+esc(m[0])+'<i>Lvl '+m[1]+wl(m)+'</i></span><span class="v">'+c.f(m[c.i])+'</span><span class="b"><u style="width:'+(m[c.i]/top*100).toFixed(1)+'%"></u></span></li>'}).join("")}
+function card(c,n){var r=rank(c,n);return'<section class="cat"><h3>'+c.t+'</h3><div class="d">'+c.d+'</div><ol>'+rows(c,r,0,r[0][c.i])+'</ol></section>'}
+function hall(){
+var P=C[0],r=rank(P,10);
+var pod=[1,0,2].filter(function(i){return r[i]}).map(function(i){var m=r[i];return'<div class="pc p'+(i+1)+'"><div class="crown">'+(i?"✦":"♛")+'</div><div class="pn">'+esc(m[0])+'</div><div class="pv">'+P.f(m[7])+'</div><div class="pl">Lvl '+m[1]+wl(m)+'</div><div class="plinth">'+(i+1)+'</div></div>'}).join("");
+return'<h2 class="sec">The Podium</h2><div class="pod">'+pod+'</div><h2 class="sec">The Legion\u2019s Finest</h2><section class="cat fin"><ol>'+rows(P,r.slice(3),3,r[0][7])+'</ol></section><h2 class="sec">Titles of Honor</h2><div class="grid">'+C.slice(1).map(function(c){return card(c,10)}).join("")+'</div>'}
+var tabs=$("tabs"),out=$("out");
 function render(){
 var h;
-if(view==="all"){h='<div class="grid">'+C.map(function(c){return card(c,10)}).join("")+'</div>'}
+if(view==="all")h=hall();
 else{var c=C.filter(function(x){return x.k===view})[0];h='<div class="full"><div class="grid">'+card(c,M.length)+'</div></div>'}
 out.innerHTML=h;
 Array.prototype.forEach.call(tabs.children,function(b){b.setAttribute("aria-pressed",b.dataset.k===view)})}
-[{k:"all",t:"Top 10 Overview"}].concat(C).forEach(function(c){
-var b=document.createElement("button");b.textContent=c.t;b.dataset.k=c.k;
-b.onclick=function(){view=c.k;render()};tabs.appendChild(b)});
-render();
+[{k:"all",t:"Hall of Fame"}].concat(C).forEach(function(c){var b=document.createElement("button");b.textContent=c.t;b.dataset.k=c.k;b.onclick=function(){view=c.k;render()};tabs.appendChild(b)});
+setWar(-1);
 </script>
 </body>
 </html>
