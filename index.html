@@ -113,6 +113,8 @@ var WARS=[
  caches:"3 Melee · 3 Armor · 1 Small Arms · 1 Medium Arms",
  members:[["RickGrimes",95,127,7,1337.5,19,94,65830799],["BellyFeii",50,114,28,768.1,31,14,62268572],["mawsieveDck",67,122,12,943.8,6,57,60957534],["Baymax",96,93,34,842.4,48,71,56125158],["ViaYourMum",57,87,24,543.0,22,47,47445913],["nemukud",35,92,2,673.5,6,1,45235468],["0WL",76,84,0,681.3,27,19,44451955],["Eric1965",30,88,0,545.8,0,0,41886274],["Jay",93,79,0,443.7,27,15,41401968],["Rhyzen",27,79,13,506.9,6,0,40055266],["CendanN",69,68,53,412.7,7,0,39558884],["SeveTheGreat",35,78,7,339.6,4,1,38062521],["ZZ-Top",41,74,12,522.5,2,0,37124448],["AuntieSay",70,67,1,416.4,11,18,33619354],["River-Tamworth",32,67,0,511.7,3,1,32641358],["Iceman32",70,35,127,174.0,7,9,32394206],["Mr_Fabulo",42,63,15,311.8,1,4,31630888],["by4ciksozz",22,62,0,403.3,2,0,29864156],["DaPlanet",38,61,0,292.5,0,0,28756468],["NZLrosebud",48,54,26,271.6,0,2,28537971],["MaRtY1923",49,46,30,255.4,1,1,25452245],["DemiGodZilla",32,51,0,324.3,4,0,24885921],["Avenque",25,51,1,319.6,0,0,24402572],["Skyn04",55,26,84,99.9,0,0,21999057],["Valsi",45,33,54,165.3,0,0,21894028],["aleksaiandrej1",27,41,4,270.4,1,0,20181408],["LongHong",37,39,13,225.0,1,1,20174955],["Sekerek",25,42,0,225.9,1,0,20025101],["R3gulus",50,33,37,192.1,0,0,19992988],["katanauser",16,41,0,217.7,0,0,19396616],["Jackrattler",70,37,1,393.3,2,3,18552298],["Droopyboner",69,29,0,257.4,3,18,14493683],["littlestjeff3",32,19,43,89.8,1,1,14127068],["HighlordZephrom",59,29,0,195.6,1,10,14000695],["AM31032",35,27,0,170.9,1,0,13008755],["mennas",73,23,3,89.8,0,1,11126993],["Beetal",58,20,1,106.1,1,0,9724528],["Aphoxi",48,8,48,48.3,2,4,9709077],["BroImMav",35,14,27,50.2,0,0,9702248],["Cooplix",26,13,11,53.3,0,0,7385276],["Jayb_1780",44,8,26,33.2,0,0,6794865],["ToughJew",33,9,19,47.9,0,0,6479776],["DarthSmoke",57,12,4,68.4,0,2,6159791],["Koolade221822",34,11,4,93.1,1,0,5930457],["Larryg72",78,0,46,0.0,0,0,5378943],["Jocey",40,9,8,51.9,0,0,5206741],["Cylver",50,4,3,30.3,0,4,2272663],["Jynx-Obey1220",32,1,6,2.8,0,0,1166546],["ThitherThread",53,1,0,2.5,1,0,610386],["Maggie_14",42,1,0,7.3,0,0,479541],["LegateLanius",31,1,0,3.7,0,0,467702]]}
 ];
+/* Renamed players: "old name (lowercase)" : "current name". Their wars are combined in the Hall of Fame. */
+var ALIAS={"bellyfeii":"BellyGrimes","mawsievedck":"MawsRickGrimes","river-tamworth":"RiverGrimes"};
 var WAR,M;
 /* ===== END OF EDITABLE DATA ===== */
 
@@ -129,7 +131,7 @@ function $(id){return document.getElementById(id)}
 [["logo",SITE.logo],["tagimg",SITE.tag]].forEach(function(p){var e=$(p[0]);e.onerror=function(){e.style.display="none"};e.src=p[1]});
 
 /* Combine every war into all-time totals (members matched by name) */
-function agg(){var mp={},o=[];WARS.slice().reverse().forEach(function(w){w.members.forEach(function(m){var k=m[0].toLowerCase(),r=mp[k];if(!r){r=mp[k]=[m[0],m[1],0,0,0,0,0,0,0];o.push(r)}r[1]=m[1];for(var i=2;i<8;i++)r[i]+=m[i];r[8]++})});return o}
+function agg(){var mp={},o=[];WARS.slice().reverse().forEach(function(w){w.members.forEach(function(m){var k=(ALIAS[m[0].toLowerCase()]||m[0]).toLowerCase(),r=mp[k];if(!r){r=mp[k]=[m[0],m[1],0,0,0,0,0,0,0];o.push(r)}r[0]=ALIAS[m[0].toLowerCase()]||m[0];r[1]=m[1];for(var i=2;i<8;i++)r[i]+=m[i];r[8]++})});return o}
 function num(w,l){var x=w.stats.filter(function(s){return s[0]===l})[0];return x?parseFloat(x[1].replace(/,/g,"")):0}
 function sum(l){return WARS.reduce(function(a,w){return a+num(w,l)},0)}
 
